@@ -1,0 +1,16 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "0b60e9dd-c7d3-4381-bedd-cfd7847cf0c1": {
+      "ProjectGuid": "0b60e9dd-c7d3-4381-bedd-cfd7847cf0c1",
+      "DisplayName": "Vacationcycle",
+      "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    }
+  },
+  "NextColorIndex": 1
+}

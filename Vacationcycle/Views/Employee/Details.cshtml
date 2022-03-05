@@ -1,0 +1,221 @@
+﻿@using System.Globalization
+@using Microsoft.Data.SqlClient
+
+@model Vacationcycle.Models.Employee
+
+
+@{
+    ViewData["Title"] = "Details";
+   
+}
+ 
+<div class="container">
+    <div class="row">
+
+<div class="card">
+     <h3 class="card-header bg-dark text-white">Employee Details</h3>
+
+        <div class="card-body">
+             <dl class="row">
+            @if (Model.ProfileImage == null)
+            {
+                <dt></dt>
+                <dd class="col-12"> <img src="~/Images/avatar.png" alt="Avatar" class="img-thumbnail float-left" width=150 hight=150/></dd>
+
+               
+            }
+            else
+            {   string imgsrc =Model.ProfileImage;
+                <dt></dt>
+                <dd class="col-12"> <img src="@Url.Content(Model.ProfileImage)" class="img-thumbnail float-left "  width=150 hight=150/></dd> 
+               
+            }
+           
+           <dt class="col-2">Name</dt>
+            <dd class="col-10">@Model.Name</dd>
+            <dt class="col-2">Job title</dt>
+            <dd class="col-10">@Model.Jobtitle</dd>
+             <dt class="col-2">Vacation Request History </dt>
+            <dd class="col-10"></dd>
+             <dt class="col-12">------------------------------------------------------------------------------------------------------------------------------------------</dt>
+                      <dd></dd>
+            
+            @{
+                CultureInfo culture = new CultureInfo("pt-BR");
+                string connetionString;
+                SqlConnection conn;
+                connetionString = @"Server=DESKTOP-IJNOICJ;Database=VacationCycleLogic;Trusted_Connection=True";
+                conn = new SqlConnection(connetionString);
+                string stmnt = @"SELECT * FROM VacationReq WHERE EmployeeID=" + Model.ID;
+                SqlCommand cmd = new SqlCommand(stmnt, conn);
+                conn.Open();
+
+                //execute the SQLCommand
+                SqlDataReader dr = cmd.ExecuteReader();
+                string vFrom="";
+                string vTo="";
+                int diff = 0;
+                int totalNum = 0;
+                string res="";
+                
+                        
+                DateTime tempnow = DateTime.Now;
+                var date = tempnow.Date;
+                DateTime now = Convert.ToDateTime(date,culture);
+                DateTime HDate = Convert.ToDateTime(Model.HiringDate,culture);
+                DateTime TenYears = Convert.ToDateTime(HDate.AddYears(10),culture);
+                int Dassign = 0;
+                int rem = 0;
+                         
+               
+                //check if there are records
+                if (dr.HasRows)
+                {   
+                       
+  
+                    while (dr.Read())
+                    {    
+                        vFrom = dr.GetString(2);
+                        vTo= dr.GetString(3);
+             
+                        
+                        DateTime From = Convert.ToDateTime(vFrom,culture);
+                        DateTime To = Convert.ToDateTime(vTo,culture);
+                        diff =diff+ (To - From).Days;
+                        totalNum++;
+
+
+                      <dt class="col-2">From</dt>
+                      <dd class="col-10">@vFrom</dd>
+                        <dt class="col-2">To</dt>
+                        <dd class="col-10">@vTo</dd>
+                        if (DBNull.Value.Equals(dr["Reason"]))
+                        {
+                            <dt class="col-2">Reason</dt>
+                            <dd class="col-10"></dd>
+                            <dt class="col-12">------------------------------------------------------------------------------------------------------------------------------------------</dt>
+                      <dd></dd>
+                        }
+                        else
+                        {   res=dr.GetString(4);
+                              <dt class="col-2">Reason</dt>
+                          <dd class="col-10">@res</dd>
+                          <dt class="col-12">------------------------------------------------------------------------------------------------------------------------------------------</dt>
+                      <dd></dd>
+                           
+                        }
+                      
+                    }
+                }
+                else
+                {
+                   <dt class="col-2"> No Vacation found</dt>
+                }
+
+                 <dt class="col-2">Total number of vacations taken</dt>
+                  <dd class="col-10">@totalNum</dd>
+                  <dt class="col-12">------------------------------------------------------------------------------------------------------------------------------------------</dt>
+                      <dd></dd>
+                   if (now>=TenYears)
+                { Dassign = 30;
+                    <dt class="col-2">Total days assigned</dt>
+                    <dd class="col-10">@Dassign Days</dd> 
+                    <dt class="col-12">------------------------------------------------------------------------------------------------------------------------------------------</dt>
+                      <dd></dd>
+                    <dt class="col-2">Taken days</dt>
+                  <dd class="col-10">@diff</dd>
+                  <dt class="col-12">------------------------------------------------------------------------------------------------------------------------------------------</dt>
+                      <dd></dd>
+                    <dt class="col-2">Remaining days</dt>
+                    rem = Dassign - diff;
+                    <dd class="col-10">@rem</dd>
+                    <dt class="col-12">------------------------------------------------------------------------------------------------------------------------------------------</dt>
+                      <dd></dd>
+                }
+                else
+                {
+                    Dassign = 21;
+                    <dt class="col-2">Total days assigned</dt>
+                  <dd class="col-10">@Dassign Days</dd>  
+                  <dt class="col-12">------------------------------------------------------------------------------------------------------------------------------------------</dt>
+                      <dd></dd>
+                    <dt class="col-2">Taken days</dt>
+                  <dd class="col-10">@diff</dd>
+                  <dt class="col-12">------------------------------------------------------------------------------------------------------------------------------------------</dt>
+                      <dd></dd>
+                 <dt class="col-2">Remaining days</dt>
+                      rem = Dassign - diff;
+                    <dd class="col-10">@rem</dd>
+                    <dt class="col-12">------------------------------------------------------------------------------------------------------------------------------------------</dt>
+                            <dd></dd>
+                        }
+
+                        conn.Close();
+
+                 
+
+
+            }
+            
+           </dl>
+
+     </div>
+ </div>
+  <form class="align-content-center">
+           <div class="form-group row">
+            <h2 class="col-12 ">Vacation request form: </h2>
+
+           <label class="col-md-2">From</label>
+          <div class="col-md-10">
+         <input  class="form-control" id="fr">
+        
+            </div>
+            </div>
+            <div class="form-group row">
+           <label class="col-md-2">To</label>
+          <div class="col-md-10">
+         <input  class="form-control" id="to">
+            </div>
+            </div>
+             <div class="form-group row">
+           <label class="col-md-2">Reason</label>
+          <div class="col-md-10">
+         <input  class="form-control" id="res">
+            </div>
+            </div>
+            <input class="btn btn-dark" type="submit" value="Submit" id="save" runat="server"> 
+            <script>
+                function getData(){
+             var frdat = document.getElementById("fr").value ;
+             var todat= document.getElementById("to").value;
+             var ress= document.getElementById("res").value;
+            
+                }
+                
+            </script>
+            @{
+              
+                 SqlConnection connec;
+                connetionString = "Server=DESKTOP-IJNOICJ;Database=VacationCycleLogic;Trusted_Connection=True";
+                connec = new SqlConnection(connetionString);
+                string stmnt2 = "SELECT * FROM OfficialVacation";
+                SqlCommand cmd2 = new SqlCommand(stmnt2, connec);
+                connec.Open();
+                string officialvacdat="";
+                
+                //execute the SQLCommand
+                SqlDataReader re = cmd2.ExecuteReader();
+                while(re.Read()){
+                   
+                }
+
+            }
+
+                  </form>
+                  
+</div>
+
+
+  </div>
+
+
